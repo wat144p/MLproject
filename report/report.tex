@@ -1,0 +1,93 @@
+\documentclass[12pt]{article}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{float}
+
+\title{End-to-End Stock Risk Forecasting \& Recommendation System}
+\author{Your Name Here \\ Course Info \\ Domain: Economics \& Finance}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This report details the implementation of an end-to-end MLOps system designed to forecast stock returns, classify risk levels, and recommend similar stocks. The system leverages Alpha Vantage for real-time data, Scikit-Learn for modeling, Prefect for pipeline orchestration, and FastAPI for deployment.
+\end{abstract}
+
+\section{Introduction}
+Stock market analysis requires robust pipelines to handle time-series data and deliver actionable insights. This project builds a comprehensive system to solve three key problems: forecasting short-term returns, classifying risk based on volatility, and identifying similar assets through clustering.
+
+\section{Problem Statement}
+Investors face challenges in quantifying risk and finding diversified assets. We aim to build a system that:
+\begin{itemize}
+    \item Predicts next-day returns ($y_{t+1}$).
+    \item Classifies stocks into risk categories (Low, Medium, High).
+    \item Recommends similar stocks based on market behavior.
+\end{itemize}
+
+\section{Methodology}
+
+\subsection{Data Source}
+We utilize the Alpha Vantage API (Time Series Daily). Data includes Open, High, Low, Close, and Volume.
+
+\subsection{Feature Engineering}
+Key features include:
+\begin{itemize}
+    \item Lagged Returns: $R_{t-1}, R_{t-2}, \dots$
+    \item Rolling Volatility: $\sigma_t = \text{std}(R_{t-k} \dots R_t)$
+    \item Moving Averages and Momentum.
+\end{itemize}
+
+\subsection{Machine Learning Models}
+\subsubsection{Regression}
+We use a Random Forest Regressor to minimize Root Mean Squared Error (RMSE):
+\begin{equation}
+    RMSE = \sqrt{\frac{1}{n}\sum_{i=1}^{n}(y_i - \hat{y}_i)^2}
+\end{equation}
+
+\subsubsection{Classification}
+A Random Forest Classifier assigns risk labels based on volatility thresholds. We evaluate using Accuracy and F1-Score.
+
+\subsubsection{Clustering \& Dimensionality Reduction}
+We apply PCA to reduce dimensions, followed by K-Means clustering to group stocks.
+\begin{equation}
+    J = \sum_{j=1}^{k} \sum_{i \in C_j} ||x^{(i)} - \mu_j||^2
+\end{equation}
+
+\section{System Architecture}
+The system is divided into an offline Training Pipeline (Prefect) and an online Inference Service (FastAPI). Models are versioned and stored in a registry.
+
+% Placeholder for Architecture Diagram
+% \begin{figure}[H]
+% \centering
+% \includegraphics[width=0.8\textwidth]{architecture_diagram.png}
+% \caption{System Architecture developed in the project.}
+% \label{fig:arch}
+% \end{figure}
+
+\section{Orchestration \& CI/CD}
+Pipelines are managed by Prefect, ensuring reproducibility. GitHub Actions handles automated testing and Docker build verification on every push.
+
+\section{Experiments \& Results}
+(Fill in your results here after running the training pipeline)
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+Metric & Value \\
+\hline
+Regression RMSE & 0.XX \\
+Classification Accuracy & 0.XX \\
+\hline
+\end{tabular}
+\caption{Model Performance Metrics}
+\end{table}
+
+\section{Conclusion}
+We successfully implemented an end-to-end MLOps solution. Future work includes integrating more tickers and advanced deep learning models (LSTM).
+
+\end{document}
