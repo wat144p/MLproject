@@ -14,7 +14,7 @@ build/
 *.egg-info/
 .DS_Store
 data/*.csv
-models/version_*
+# models/version_*
 experiments/*.json
 experiments/*.csv
 .prefect/
