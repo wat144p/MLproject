@@ -12,10 +12,24 @@ import os
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
 
+from contextlib import asynccontextmanager
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    print("\n" + "="*50)
+    print("🚀  RiskGuard AI is running!")
+    print("👉  Access here: http://localhost:8000")
+    print("="*50 + "\n")
+    yield
+    # Shutdown
+    print("Shutting down...")
+
 app = FastAPI(
     title="Stock Risk Forecasting API",
     description="End-to-End MLOps Project for Stock Risk Classification and Forecasting",
-    version="1.0.0"
+    version="1.0.0",
+    lifespan=lifespan
 )
 
 # Mount Static Files (Frontend)
@@ -97,9 +111,4 @@ def get_metrics():
         data = json.load(f)
     return data
 
-@app.on_event("startup")
-async def startup_event():
-    print("\n" + "="*50)
-    print("🚀  RiskGuard AI is running!")
-    print("👉  Access here: http://localhost:8000")
-    print("="*50 + "\n")
+
