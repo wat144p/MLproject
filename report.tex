@@ -80,8 +80,8 @@ The system follows a micro-service inspired architecture, verified by a linear D
 \begin{itemize}
     \item \textbf{Data Tier}: Ingests daily OHLCV data from Alpha Vantage with an automatic \textbf{yfinance} fallback for reliability.
     \item \textbf{Orchestration Tier}: \textbf{Prefect} manages the workflow, ensuring retries and failure handling.
-    \item \textbf{Validation Tier}: \textbf{DeepChecks} validates data integrity and detects feature drift before training.
-    \item \textbf{Serving Tier}: \textbf{FastAPI} provides real-time inference endpoints ($\texttt{/predict\_risk}$, $\texttt{/recommend}$).
+    \item \textbf{Validation Tier}: \textbf{DeepChecks} validates data integrity and detects feature drift, with a \textbf{robust fallback strategy} implemented for compatibility across Python versions.
+    \item \textbf{Serving Tier}: \textbf{FastAPI} provides real-time inference endpoints, utilizing modern \texttt{lifespan} events for safe startup and shutdown logging.
     \item \textbf{DevOps Tier}: GitHub Actions provides CI/CD while Docker ensures environment parity.
 \end{itemize}
 
@@ -144,7 +144,8 @@ F1-Score (Risk) & 0.58 & 0.67 \\ \hline
 \begin{itemize}
     \item \textbf{Data Scarcity \& Variance}: Initially, testing on a 30-day window yielded unstable metrics. I increased the dataset to \textbf{5 years} of history and a \textbf{90-day} test set to achieve a statistically significant accuracy of $\approx$68\%.
     \item \textbf{API Rate Limits}: The primary data source (Alpha Vantage) has strict rate limits. A robust fallback mechanism to \textbf{yfinance} was implemented.
-    \item \textbf{Docker Networking}: A common issue with containerized apps binding to \texttt{0.0.0.0} vs \texttt{localhost} was resolved by explicit logging instructions.
+    \item \textbf{Docker Networking}: A common issue with containerized apps binding to \texttt{0.0.0.0} was resolved. Additionally, build times were optimized from $>$20 minutes to seconds by implementing a \texttt{.dockerignore} file to exclude heavy artifacts.
+    \item \textbf{Model Versioning}: A Git ignore misconfiguration prevented models from deploying to the cloud. This was resolved by whitelisting \texttt{models/**/*.pkl}, ensuring complete reproducibility on Render.
 \end{itemize}
 \end{sloppypar}
 
