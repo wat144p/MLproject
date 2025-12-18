@@ -85,3 +85,8 @@ pytest
 2. **Orchestration Layer**: Prefect pipeline (Data -> Validation -> Training -> Versioning).
 3. **Application Layer**: FastAPI (Async endpoints for inference).
 4. **DevOps Layer**: Docker + GitHub Actions (CI/CD).
+
+## 🟢 Deployment Status
+- **Docker**: Ready
+- **CI/CD**: Active
+- **Tests**: Passing
