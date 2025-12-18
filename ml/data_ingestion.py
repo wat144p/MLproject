@@ -34,7 +34,7 @@ def fetch_stock_data(tickers: List[str], use_cache: bool = True) -> pd.DataFrame
             print(f"Loading {ticker} from cache...")
             try:
                 df = pd.read_csv(cache_path)
-                df["date"] = pd.to_datetime(df["date"])
+                df["date"] = pd.to_datetime(df["date"], utc=True)
                 all_data.append(df)
                 continue
             except Exception:
@@ -65,7 +65,7 @@ def fetch_stock_data(tickers: List[str], use_cache: bool = True) -> pd.DataFrame
                         "Close": "close",
                         "Volume": "volume",
                     })
-                    hist["date"] = pd.to_datetime(hist["date"])
+                    hist["date"] = pd.to_datetime(hist["date"], utc=True)
                     df = hist[["date", "open", "high", "low", "close", "volume"]].copy()
                 except Exception as e:
                     print(f"yfinance error for {ticker}: {e}")
@@ -109,7 +109,7 @@ def fetch_stock_data(tickers: List[str], use_cache: bool = True) -> pd.DataFrame
             ]
             
             # Convert date column to datetime objects
-            hist["date"] = pd.to_datetime(hist["date"])
+            hist["date"] = pd.to_datetime(hist["date"], utc=True)
 
             # Standardize columns
             needed_cols = ["date", "open", "high", "low", "close", "volume"]
