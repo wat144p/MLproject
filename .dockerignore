@@ -1,0 +1,22 @@
+# User's venv
+venv/
+.venv/
+env/
+__pycache__/
+*.pyc
+
+# Git history (very large)
+.git/
+.github/
+
+# VS Code settings
+.vscode/
+
+# Local data (if using volumes, but we typically copy data for standalone. Keep data if small, otherwise ignore)
+# data/ 
+
+# Experiments (prevent copying thousands of json logs)
+experiments/
+
+# Tests
+tests/
