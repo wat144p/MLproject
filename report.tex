@@ -41,7 +41,7 @@
     Registration No: 2023909 \\
     Course Code: AI-321 \\
     \\
-    Instructor: Asim Shah \\
+    Instructors: Asim Shah \& Ali Imran Sandhu \\
     Department of Computer Science and Engineering \\
     GIK Institute
 }
@@ -55,23 +55,54 @@
 \newpage
 
 \section{Introduction}
+\begin{abstract}
+This report details the design and implementation of an end-to-end Machine Learning Operations (MLOps) system capable of forecasting daily stock returns, classifying asset risk, and recommending similar equities. The system integrates a robust offline training pipeline with an online inference service. Leveraging Alpha Vantage for real-time financial data, the solution utilizes Scikit-Learn for modeling, Prefect for workflow orchestration, FastAPI for model serving, and Docker for containerized deployment, ensuring a reproducible and scalable architecture.
+\end{abstract}
+
 \subsection{Project Overview}
 This project demonstrates a production-grade Machine Learning Engineering pipeline in the \textbf{Economics \& Finance} domain. The primary objective is to build a "RiskGuard AI" system that predicts stock return volatility, classifies risk profiles, and recommends similar stocks using an integrated MLOps framework.
 
 \subsection{Problem Statement}
-In the highly volatile financial market, manual analysis is insufficient. This project solves the problem of automated risk assessment by building an end-to-end system that handles data ingestion, automated validation via DeepChecks, training orchestration via Prefect, and containerized deployment via Docker and FastAPI.
+In the highly volatile financial market, manual analysis is insufficient. Institutional investors require automated systems to quantify risk and identify diversification opportunities. This project solves the problem of automated risk assessment by building an end-to-end system that handles data ingestion, automated validation via DeepChecks, training orchestration via Prefect, and containerized deployment via Docker and FastAPI.
 
-\section{System Architecture}
-The system follows a micro-service inspired architecture:
+\section{System Architecture \& Data Flow}
+
+% TODO: INSERT SYSTEM ARCHITECTURE DIAGRAM HERE
+% \begin{figure}[h]
+% \centering
+% \includegraphics[width=0.8\textwidth]{architecture_diagram.png}
+% \caption{System Architecture: Data Ingestion -> Prefect -> Model Training -> Docker -> FastAPI}
+% \end{figure}
+
+The system follows a micro-service inspired architecture, verified by a linear DAG (Directed Acyclic Graph) structure:
+
+\subsection{Core Components}
 \begin{itemize}
-    \item \textbf{Data Tier}: Ingests data from Alpha Vantage with an automatic \textbf{yfinance} fallback.
-    \item \textbf{Orchestration Tier}: Prefect manages the workflow, ensuring retries and failure handling.
-    \item \textbf{Validation Tier}: DeepChecks validates data integrity and detects feature drift before training.
-    \item \textbf{Serving Tier}: FastAPI provides real-time inference endpoints.
+    \item \textbf{Data Tier}: Ingests daily OHLCV data from Alpha Vantage with an automatic \textbf{yfinance} fallback for reliability.
+    \item \textbf{Orchestration Tier}: \textbf{Prefect} manages the workflow, ensuring retries and failure handling.
+    \item \textbf{Validation Tier}: \textbf{DeepChecks} validates data integrity and detects feature drift before training.
+    \item \textbf{Serving Tier}: \textbf{FastAPI} provides real-time inference endpoints ($\texttt{/predict\_risk}$, $\texttt{/recommend}$).
     \item \textbf{DevOps Tier}: GitHub Actions provides CI/CD while Docker ensures environment parity.
 \end{itemize}
 
+\subsection{End-to-End Pipeline Flow}
+\begin{enumerate}
+    \item \textbf{Ingestion:} The \texttt{ingestion} module fetches daily data (5-years history) for the target universe.
+    \item \textbf{Drift Detection:} DeepChecks compares incoming data against reference distributions to catch anomalies.
+    \item \textbf{Feature Engineering:} Raw prices are transformed into stationary features, including \textbf{RSI, MACD}, and rolling volatility.
+    \item \textbf{Training:} Regressors and Classifiers are trained on historical data (Time-Series Split).
+    \item \textbf{Registry:} Versioned artifacts (Joblib) are stored in the \texttt{models/} directory.
+    \item \textbf{Inference:} The FastAPI service loads the latest model version into memory at startup.
+\end{enumerate}
+
 \section{Methodology}
+% TODO: INSERT METHODOLOGY FLOW DIAGRAM HERE
+% \begin{figure}[h]
+% \centering
+% \includegraphics[width=0.8\textwidth]{methodology_flow.png}
+% \caption{Methodology Flow: Raw Data -> Feature Engineering (RSI/MACD) -> Split -> Train -> Evaluate}
+% \end{figure}
+
 \subsection{Machine Learning Tasks}
 The project incorporates multiple ML paradigms:
 \begin{enumerate}
@@ -96,23 +127,31 @@ Multiple experiments were conducted during the development phase.
     \item \textbf{Improved Model}: Random Forest with lagged returns and rolling volatility features.
 \end{enumerate}
 
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \begin{tabular}{|l|c|c|}
 \hline
 \textbf{Metric} & \textbf{Baseline} & \textbf{Final Model} \\ \hline
-Accuracy (Risk) & 62\% & 84\% \\ \hline
+Accuracy (Risk) & 62\% & 68\% \\ \hline
 R2 Score (Return) & -0.12 & 0.15 \\ \hline
-F1-Score (Risk) & 0.58 & 0.81 \\ \hline
+F1-Score (Risk) & 0.58 & 0.67 \\ \hline
 \end{tabular}
 \caption{Model Performance Comparison}
 \end{table}
 
-\textbf{Observations:}
+\textbf{Challenges Overcome:}
+\begin{sloppypar}
 \begin{itemize}
-    \item \textbf{Overfitting}: Detected initially in the Regressor, mitigated by limiting tree depth and increasing features.
-    \item \textbf{Data Quality}: Alpha Vantage limits were mitigated by the yfinance fallback mechanism.
-    \item \textbf{Reliability}: Prefect reduced ingestion-related manual restarts by 100\% through automated retries.
+    \item \textbf{Data Scarcity \& Variance}: Initially, testing on a 30-day window yielded unstable metrics. I increased the dataset to \textbf{5 years} of history and a \textbf{90-day} test set to achieve a statistically significant accuracy of $\approx$68\%.
+    \item \textbf{API Rate Limits}: The primary data source (Alpha Vantage) has strict rate limits. A robust fallback mechanism to \textbf{yfinance} was implemented.
+    \item \textbf{Docker Networking}: A common issue with containerized apps binding to \texttt{0.0.0.0} vs \texttt{localhost} was resolved by explicit logging instructions.
+\end{itemize}
+\end{sloppypar}
+
+\textbf{Key Technical Choices:}
+\begin{itemize}
+    \item \textbf{Feature Engineering}: Added \textbf{RSI} (Relative Strength Index) and \textbf{MACD} (Moving Average Convergence Divergence) to capture market momentum, improving model robustness over simple price history.
+    \item \textbf{Cloud Readiness}: The application is fully containerized, allowing for seamless deployment to cloud platforms like Render or DigitalOcean.
 \end{itemize}
 
 \section{DevOps \& MLOps Implementation}
@@ -132,7 +171,13 @@ The Dockerfile uses a \texttt{3.11-slim} Python image to minimize footprint. Por
 
 \section{Conclusion \& Future Work}
 The project successfully bridges the gap between ML models and production systems. 
-\textbf{Limitations:} Limited by the free tier API rate of Alpha Vantage.
-\textbf{Future Work:} Implementation of a Redis cache for real-time inference speed improvements and incorporating sentiment analysis from news feeds.
+\textbf{Limitations:} The usage of free-tier APIs limits real-time high-frequency trading capabilities, as data is refreshed only daily.
+
+\textbf{Future Work:}
+\begin{itemize}
+    \item \textbf{Sentiment Analysis}: Integrating Financial News Sentiment using Transformer models like \texttt{FinBERT} to augment price-based features with qualitative market signals.
+    \item \textbf{Scalability}: Migrating from Docker Compose to \textbf{Kubernetes} (K8s) for horizontal scaling and high availability.
+    \item \textbf{Redis Caching}: Implementing a distributed caching layer to reduce API latency for frequent inference requests.
+\end{itemize}
 
 \end{document}
