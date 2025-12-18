@@ -1,5 +1,10 @@
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Load env variables from .env file
+load_dotenv()
+
 
 # Base paths
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -8,17 +13,26 @@ MODELS_DIR = BASE_DIR / "models"
 EXPERIMENTS_DIR = BASE_DIR / "experiments"
 
 # Tickers to track
-TICKERS = ["AAPL", "MSFT", "GOOGL", "AMZN", "TSLA"]
+# Mix of US Tech and Pakistan Stock Exchange (PSX via .PA suffix)
+TICKERS = [
+    "AAPL",
+    "MSFT",
+    "GOOGL",
+    "AMZN",
+    "TSLA",
+    "NVDA",
+] # PSX Blue Chips
 
 # Model hyperparameters (simple for "laptop-scale")
-RF_N_ESTIMATORS = 50
-RF_MAX_DEPTH = 10
+# Model hyperparameters (simple for "laptop-scale")
+RF_N_ESTIMATORS = 100
+RF_MAX_DEPTH = 15
 CLUSTERS_K = 3
 PCA_COMPONENTS = 3
 
 # Data settings
-HISTORY_YEARS = 2 # Fetch last 2 years to keep it light
-TEST_SIZE_DAYS = 30 # Last 30 days for testing
+HISTORY_YEARS = 5 # Fetch last 5 years for more data
+TEST_SIZE_DAYS = 90 # Last 90 days (approx 3 months) for testing
 VAL_SIZE_DAYS = 30  # Previous 30 days for validation
 
 # Risk thresholds (Classification)

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Risk Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="background-glow"></div>
+    
+    <main class="container">
+        <header>
+            <div class="logo">
+                <span class="icon">⚡</span>
+                <h1>Risk<span class="highlight">Guard</span> AI</h1>
+            </div>
+            <p>Institutional-grade Stock Risk Forecasting</p>
+        </header>
+
+        <section class="analysis-card">
+            <div class="input-group">
+                <input type="text" id="tickerInput" placeholder="Enter Ticker (e.g. AAPL)" autocomplete="off">
+                <button id="analyzeBtn" onclick="analyzeRisk()">
+                    <span>Analyze Risk</span>
+                    <div class="loader" id="loader"></div>
+                </button>
+            </div>
+
+            <div id="resultContainer" class="result-container hidden">
+                <div class="result-header">
+                    <h2 id="tickerLabel">AAPL</h2>
+                    <span class="badge" id="riskBadge">MEDIUM RISK</span>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric-box">
+                        <span class="label">Volatility (30d)</span>
+                        <span class="value" id="volatilityVal">--</span>
+                    </div>
+                    <div class="metric-box">
+                        <span class="label">Confidence</span>
+                        <span class="value" id="confidenceVal">--</span>
+                    </div>
+                    <div class="metric-box">
+                        <span class="label">Recommendation</span>
+                        <span class="value highlight-text" id="recommendationVal">--</span>
+                    </div>
+                </div>
+
+                <div class="probabilities">
+                    <h3>Risk Probability Distribution</h3>
+                    <div class="bar-chart">
+                        <div class="bar-row">
+                            <span>Low</span>
+                            <div class="bar-track"><div class="bar-fill low" id="probLow" style="width: 0%"></div></div>
+                            <span class="perc" id="percLow">0%</span>
+                        </div>
+                        <div class="bar-row">
+                            <span>Medium</span>
+                            <div class="bar-track"><div class="bar-fill med" id="probMed" style="width: 0%"></div></div>
+                            <span class="perc" id="percMed">0%</span>
+                        </div>
+                        <div class="bar-row">
+                            <span>High</span>
+                            <div class="bar-track"><div class="bar-fill high" id="probHigh" style="width: 0%"></div></div>
+                            <span class="perc" id="percHigh">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="errorContainer" class="error-container hidden">
+                <p id="errorMsg">Error fetching data</p>
+            </div>
+        </section>
+    </main>
+    <script src="js/script.js"></script>
+</body>
+</html>

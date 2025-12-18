@@ -8,6 +8,9 @@ class RiskPredictionResponse(BaseModel):
     ticker: str
     risk_class: str
     probabilities: Dict[str, float]
+    volatility: float
+    confidence_score: float
+    recommendation: str
     
 class ReturnPredictionRequest(BaseModel):
     ticker: str

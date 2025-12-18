@@ -29,11 +29,14 @@ def test_split_data():
     }
     df = pd.DataFrame(data)
     
-    train, test = split_data(df, test_days=10)
+    # test_split_data expects df to have 'risk_class' for stratification
+    # and 'target_return_next_day' (which we added).
+    # Also we must provide 'risk_class' because split_data uses stratify=df['risk_class']
+    df["risk_class"] = 1 # Dummy class
     
-    # Test set should loosely capture the last 10 days 
-    # (strictly it captures all rows >= split_date)
-    assert len(test) >= 10
-    assert len(train) < 100
-    # Provide gap for overlap or exact logic check (split is by date, 1 row per day)
-    assert 80 <= len(train) <= 90
+    # split_data expects 'test_size' (float or int), not 'test_days'
+    train, test = split_data(df, test_size=0.1)
+    
+    # Check split ratio approx
+    assert len(test) == 10
+    assert len(train) == 90

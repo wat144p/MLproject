@@ -2,6 +2,7 @@ from fastapi.testclient import TestClient
 from app.main import app
 from app.dependencies import get_models
 from unittest.mock import MagicMock
+import pandas as pd
 import pytest
 
 client = TestClient(app)
@@ -44,9 +45,12 @@ def mock_fetch(mocker):
     app.dependency_overrides = {}
 
 def test_home():
-    response = client.get("/")
-    assert response.status_code == 200
-    assert "project" in response.json()
+    response = client.get("/", follow_redirects=False)
+    # It redirects to /static/index.html
+    assert response.status_code in [307, 200] 
+    if response.status_code == 200:
+        # If it followed redirect
+        assert "text/html" in response.headers["content-type"]
 
 def test_predict_risk(mock_fetch):
     response = client.post("/predict_risk", json={"ticker": "AAPL"})

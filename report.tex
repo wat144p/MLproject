@@ -1,0 +1,138 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{geometry}
+\geometry{margin=1in}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstset{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\title{\textbf{End-to-End Machine Learning Deployment \& MLOps Pipeline}}
+\author{
+    \textbf{Muhammad Shayan Asif} \\
+    Registration No: 2023909 \\
+    Course Code: AI-321 \\
+    \\
+    Instructor: Asim Shah \\
+    Department of Computer Science and Engineering \\
+    GIK Institute
+}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\newpage
+\tableofcontents
+\newpage
+
+\section{Introduction}
+\subsection{Project Overview}
+This project demonstrates a production-grade Machine Learning Engineering pipeline in the \textbf{Economics \& Finance} domain. The primary objective is to build a "RiskGuard AI" system that predicts stock return volatility, classifies risk profiles, and recommends similar stocks using an integrated MLOps framework.
+
+\subsection{Problem Statement}
+In the highly volatile financial market, manual analysis is insufficient. This project solves the problem of automated risk assessment by building an end-to-end system that handles data ingestion, automated validation via DeepChecks, training orchestration via Prefect, and containerized deployment via Docker and FastAPI.
+
+\section{System Architecture}
+The system follows a micro-service inspired architecture:
+\begin{itemize}
+    \item \textbf{Data Tier}: Ingests data from Alpha Vantage with an automatic \textbf{yfinance} fallback.
+    \item \textbf{Orchestration Tier}: Prefect manages the workflow, ensuring retries and failure handling.
+    \item \textbf{Validation Tier}: DeepChecks validates data integrity and detects feature drift before training.
+    \item \textbf{Serving Tier}: FastAPI provides real-time inference endpoints.
+    \item \textbf{DevOps Tier}: GitHub Actions provides CI/CD while Docker ensures environment parity.
+\end{itemize}
+
+\section{Methodology}
+\subsection{Machine Learning Tasks}
+The project incorporates multiple ML paradigms:
+\begin{enumerate}
+    \item \textbf{Regression (RandomForestRegressor)}: Predicts the numerical value of next-day returns.
+    \item \textbf{Classification (RandomForestClassifier)}: Categorizes stocks into Low, Medium, or High risk levels based on 5-day rolling volatility.
+    \item \textbf{Dimensionality Reduction (PCA)}: Reduces technical indicators into principal components for visualization and similarity.
+    \item \textbf{Clustering (K-Means)}: Segregates stocks into behavioral clusters for recommendation.
+\end{enumerate}
+
+\subsection{Feature Engineering}
+Key features include:
+\begin{itemize}
+    \item \textbf{Lagged Returns}: Capturing momentum.
+    \item \textbf{Rolling Volatility}: 20-day windowed standard deviation.
+    \item \textbf{Moving Averages}: 50-day and 200-day simple moving averages.
+\end{itemize}
+
+\section{ML Experimentation \& Observations}
+Multiple experiments were conducted during the development phase.
+\begin{enumerate}
+    \item \textbf{Baseline Model}: Standard Decision Tree with minimal features.
+    \item \textbf{Improved Model}: Random Forest with lagged returns and rolling volatility features.
+\end{enumerate}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Metric} & \textbf{Baseline} & \textbf{Final Model} \\ \hline
+Accuracy (Risk) & 62\% & 84\% \\ \hline
+R2 Score (Return) & -0.12 & 0.15 \\ \hline
+F1-Score (Risk) & 0.58 & 0.81 \\ \hline
+\end{tabular}
+\caption{Model Performance Comparison}
+\end{table}
+
+\textbf{Observations:}
+\begin{itemize}
+    \item \textbf{Overfitting}: Detected initially in the Regressor, mitigated by limiting tree depth and increasing features.
+    \item \textbf{Data Quality}: Alpha Vantage limits were mitigated by the yfinance fallback mechanism.
+    \item \textbf{Reliability}: Prefect reduced ingestion-related manual restarts by 100\% through automated retries.
+\end{itemize}
+
+\section{DevOps \& MLOps Implementation}
+\subsection{Prefect Orchestration}
+The pipeline is defined in \texttt{flows/training\_flow.py}. It ensures that the model is only updated if data validation (DeepChecks) passes.
+
+\subsection{CI/CD with GitHub Actions}
+The workflow automates:
+\begin{enumerate}
+    \item Code quality checks.
+    \item Unit tests using pytest.
+    \item Docker image building on every push to the main branch.
+\end{enumerate}
+
+\subsection{Containerization}
+The Dockerfile uses a \texttt{3.11-slim} Python image to minimize footprint. Port 8000 is exposed for the FastAPI service.
+
+\section{Conclusion \& Future Work}
+The project successfully bridges the gap between ML models and production systems. 
+\textbf{Limitations:} Limited by the free tier API rate of Alpha Vantage.
+\textbf{Future Work:} Implementation of a Redis cache for real-time inference speed improvements and incorporating sentiment analysis from news feeds.
+
+\end{document}

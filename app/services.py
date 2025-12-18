@@ -9,9 +9,8 @@ class PredictionService:
         self.models = models
         self.features_list = models["features"]
 
-    def _get_latest_features(self, ticker: str):
+    def _get_latest_features(self, ticker: str, return_all=False):
         # Fetch data (cached if possible/recent)
-        # In production this would use a real feature store
         df = fetch_stock_data([ticker], use_cache=True)
         if df.empty:
             raise ValueError(f"No data found for {ticker}")
@@ -21,27 +20,52 @@ class PredictionService:
         # Get the very last row
         latest = df_features.iloc[[-1]].copy()
         
-        # Check if we have enough data (create_features might drop if not enough history)
-        if latest.empty or latest[self.features_list].isna().any().any():
-             # Fallback: maybe we need to fetch more data or handle new ticker
-             # Try using the row before if the last one is NaN (e.g. next_day_return is NaN but lags are ok)
-             # Actually create_features keeps NaN targets but lags should be present if history > 20 days
+        # Check if we have enough data
+        if latest.empty:
+             raise ValueError("Not enough history to generate features.")
+
+        # If model features are NaN (e.g. not enough history for lags), warn/fail
+        # But we try to proceed if return_all is True (for metadata extraction)
+        if latest[self.features_list].isna().any().any():
+             # Basic check: if critical lags are missing, we can't predict
              if latest.iloc[0]["return_lag1"] is None or np.isnan(latest.iloc[0]["return_lag1"]):
                  raise ValueError("Not enough history to generate features.")
         
+        if return_all:
+            return latest
+
         return latest[self.features_list]
 
     def predict_risk(self, ticker: str):
-        features = self._get_latest_features(ticker)
+        # Get full row to extract volatility
+        full_row = self._get_latest_features(ticker, return_all=True)
+        features = full_row[self.features_list]
         
         # Proba
         probas = self.models["classifier"].predict_proba(features)[0]
         max_idx = np.argmax(probas)
+        confidence = float(probas[max_idx])
         risk_class = RISK_LEVELS[max_idx] if max_idx < len(RISK_LEVELS) else "Unknown"
+        
+        # Extract Volatility (handle if missing)
+        vol = 0.0
+        if "volatility_20d" in full_row.columns:
+            vol = float(full_row.iloc[0]["volatility_20d"])
+            if np.isnan(vol): vol = 0.0
+
+        # Simple Recommendation Logic
+        # If Low Risk -> Buy/Hold
+        # If High Risk -> Sell
+        rec = "HOLD"
+        if risk_class == "Low": rec = "BUY"
+        elif risk_class == "High": rec = "SELL"
         
         return {
             "risk_class": risk_class,
-            "probabilities": {RISK_LEVELS[i]: float(p) for i, p in enumerate(probas)}
+            "probabilities": {RISK_LEVELS[i]: float(p) for i, p in enumerate(probas)},
+            "volatility": vol,
+            "confidence_score": confidence,
+            "recommendation": rec
         }
 
     def predict_return(self, ticker: str):

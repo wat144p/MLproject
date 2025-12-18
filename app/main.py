@@ -9,6 +9,8 @@ from app.services import PredictionService
 from ml.config import EXPERIMENTS_DIR, TICKERS
 import json
 import os
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import RedirectResponse
 
 app = FastAPI(
     title="Stock Risk Forecasting API",
@@ -16,21 +18,14 @@ app = FastAPI(
     version="1.0.0"
 )
 
+# Mount Static Files (Frontend)
+# Ensure directory exists to prevent startup error
+os.makedirs("app/static", exist_ok=True)
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
+
 @app.get("/")
-def home(models = Depends(get_models)):
-    model_status = "Loaded" if models else "Not Loaded (Run training first)"
-    return {
-        "project": "Stock Risk Forecasting & Recommendation System",
-        "domain": "Economics & Finance",
-        "endpoints": [
-            "/predict_risk",
-            "/predict_return",
-            "/recommend_similar",
-            "/metrics"
-        ],
-        "model_status": model_status,
-        "supported_tickers": TICKERS
-    }
+async def read_root():
+    return RedirectResponse(url="/static/index.html")
 
 @app.post("/predict_risk", response_model=RiskPredictionResponse)
 def predict_risk(request: RiskPredictionRequest, models = Depends(get_models)):
@@ -43,7 +38,10 @@ def predict_risk(request: RiskPredictionRequest, models = Depends(get_models)):
         return {
             "ticker": request.ticker,
             "risk_class": result["risk_class"],
-            "probabilities": result["probabilities"]
+            "probabilities": result["probabilities"],
+            "volatility": result["volatility"],
+            "confidence_score": result["confidence_score"],
+            "recommendation": result["recommendation"]
         }
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -98,3 +96,10 @@ def get_metrics():
     with open(latest, "r") as f:
         data = json.load(f)
     return data
+
+@app.on_event("startup")
+async def startup_event():
+    print("\n" + "="*50)
+    print("🚀  RiskGuard AI is running!")
+    print("👉  Access here: http://localhost:8000")
+    print("="*50 + "\n")

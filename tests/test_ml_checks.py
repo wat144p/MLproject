@@ -11,7 +11,7 @@ def test_data_integrity_check():
     })
     
     report = check_data_integrity(df)
-    assert report["passed"] is True # Passed because not enough data to trigger failure, but has warnings
+    assert report["passed"] is False # Failed because count < 50
     assert "price" in report["missing_values"]
 
 def test_minimal_training_performance():
