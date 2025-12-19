@@ -99,11 +99,16 @@ def split_data(df: pd.DataFrame, test_size: float = 0.2, random_state: int = 42)
             raise ValueError(f"DataFrame must contain '{col}' for split.")
     # Drop rows with NaNs in the target columns
     df_clean = df.dropna(subset=required).copy()
-    from sklearn.model_selection import train_test_split
-    train_df, test_df = train_test_split(
-        df_clean,
-        test_size=test_size,
-        stratify=df_clean["risk_class"],
-        random_state=random_state,
-    )
+    # Strict Time-Series Split (No Shuffle) to prevent data leakage.
+    # Assumption: df is already sorted by date (handled in create_features).
+    if isinstance(test_size, float):
+        train_size = int(len(df_clean) * (1 - test_size))
+    else:
+        # Assumes int means number of test samples (e.g. days)
+        train_size = len(df_clean) - int(test_size)
+        
+    train_df = df_clean.iloc[:train_size]
+    test_df = df_clean.iloc[train_size:]
+    
+    print(f"Time-Series Split: Train={len(train_df)}, Test={len(test_df)}")
     return train_df, test_df

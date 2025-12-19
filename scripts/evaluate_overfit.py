@@ -35,7 +35,7 @@ def main():
     
     # Evaluate on training data
     # IMPORTANT: evaluate_models saves metrics to disk. 
-    train_metrics_output = evaluate_models(models, train_df)
+    train_metrics = evaluate_models(models, train_df)
     
     # Load actual test metrics (the ones saved from the pipeline run)
     # Since evaluate_models just saved a file, we skip the most recent one.

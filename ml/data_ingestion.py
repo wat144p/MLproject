@@ -31,14 +31,19 @@ def fetch_stock_data(tickers: List[str], use_cache: bool = True) -> pd.DataFrame
         
         # Simple cache logic
         if use_cache and cache_path.exists():
-            print(f"Loading {ticker} from cache...")
-            try:
-                df = pd.read_csv(cache_path)
-                df["date"] = pd.to_datetime(df["date"], utc=True)
-                all_data.append(df)
-                continue
-            except Exception:
-                print(f"Cache corrupted for {ticker}, refetching...")
+            # Check if cache is stale (older than 24 hours)
+            last_modified = cache_path.stat().st_mtime
+            if (time.time() - last_modified) > 86400: # 24 hours in seconds
+                print(f"Cache for {ticker} is expired (>24h). Refetching...")
+            else:
+                print(f"Loading {ticker} from cache...")
+                try:
+                    df = pd.read_csv(cache_path)
+                    df["date"] = pd.to_datetime(df["date"], utc=True)
+                    all_data.append(df)
+                    continue
+                except Exception:
+                    print(f"Cache corrupted for {ticker}, refetching...")
 
         print(f"Fetching {ticker} from Alpha Vantage...")
         
