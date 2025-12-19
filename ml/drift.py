@@ -79,8 +79,8 @@ def run_deepchecks_suite(train_df: pd.DataFrame, test_df: pd.DataFrame) -> dict:
         if label_col not in train_df.columns:
             return {"passed": False, "error": "Label column missing"}
 
-        ds_train = Dataset(train_df, label=label_col, index_name="date", parsing_date=["date"])
-        ds_test = Dataset(test_df, label=label_col, index_name="date", parsing_date=["date"])
+        ds_train = Dataset(train_df, label=label_col, cat_features=["ticker"])
+        ds_test = Dataset(test_df, label=label_col, cat_features=["ticker"])
         
         # 2. Run the Suite
         suite = train_test_validation()
@@ -118,4 +118,5 @@ def run_deepchecks_suite(train_df: pd.DataFrame, test_df: pd.DataFrame) -> dict:
             "score": score,
             "mode": "Manual Fallback"
         }
+
 

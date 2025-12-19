@@ -46,3 +46,4 @@ def test_minimal_training_performance():
     acc = models["classifier"].score(df[models["features"]], df["risk_class"])
     assert acc > 0.7 # Should learn the simple rule easily
 
+

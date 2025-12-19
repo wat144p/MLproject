@@ -41,3 +41,4 @@ def test_split_data():
     assert len(test) == 10
     assert len(train) == 90
 
+

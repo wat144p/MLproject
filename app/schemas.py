@@ -27,3 +27,4 @@ class RecommendationResponse(BaseModel):
     input_ticker: str
     recommendations: List[Dict[str, str]] # List of {ticker: "AAPL", risk_class: "Low"}
 
+

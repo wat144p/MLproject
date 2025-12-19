@@ -150,3 +150,4 @@ def fetch_stock_data(tickers: List[str], use_cache: bool = True) -> pd.DataFrame
     combined_df = pd.concat(all_data, ignore_index=True)
     return combined_df
 
+

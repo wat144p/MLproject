@@ -39,3 +39,4 @@ VAL_SIZE_DAYS = 30  # Previous 30 days for validation
 # Example: 0=Low, 1=Medium, 2=High
 RISK_LEVELS = ["Low", "Medium", "High"]
 
+

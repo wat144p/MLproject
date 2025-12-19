@@ -16,7 +16,7 @@ __pycache__/
 # data/ 
 
 # Experiments (prevent copying thousands of json logs)
-experiments/
+# # experiments/ (Allowed now for metrics) (Allowed now for metrics)
 
 # Tests
 tests/
