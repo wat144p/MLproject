@@ -38,3 +38,4 @@ jobs:
       run: |
         docker build -t stock-mlops-api .
 
+

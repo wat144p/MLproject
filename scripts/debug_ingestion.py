@@ -21,3 +21,4 @@ try:
             print("DATA DIR MISSING")
 except Exception as e:
     print(f"CRITICAL ERROR: {e}")
+

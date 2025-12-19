@@ -118,3 +118,4 @@ def run_deepchecks_suite(train_df: pd.DataFrame, test_df: pd.DataFrame) -> dict:
             "score": score,
             "mode": "Manual Fallback"
         }
+

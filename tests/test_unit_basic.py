@@ -40,3 +40,4 @@ def test_split_data():
     # Check split ratio approx
     assert len(test) == 10
     assert len(train) == 90
+

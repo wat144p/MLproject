@@ -69,3 +69,4 @@ function updateBar(barId, textId, value) {
 document.getElementById('tickerInput').addEventListener('keypress', function (e) {
     if (e.key === 'Enter') analyzeRisk();
 });
+

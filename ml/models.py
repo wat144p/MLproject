@@ -113,3 +113,4 @@ def load_latest_models() -> dict:
                 models[p.stem] = pickle.load(f)
                 
     return models
+

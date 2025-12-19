@@ -63,3 +63,4 @@ def test_predict_return(mock_fetch):
     response = client.post("/predict_return", json={"ticker": "AAPL"})
     assert response.status_code == 200
     assert "predicted_next_day_return" in response.json()
+

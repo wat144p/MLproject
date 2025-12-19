@@ -10,3 +10,4 @@ from flows.training_flow import training_flow
 if __name__ == "__main__":
     print("Starting local training run...")
     training_flow()
+

@@ -36,3 +36,4 @@ Located in `flows/training_flow.py`, the orchestration pipeline executes:
 ### 4. Infrastructure
 - **Docker**: Single container encapsulating the API and dependencies.
 - **CI/CD**: GitHub Actions triggers pytest suite and Docker build verification.
+

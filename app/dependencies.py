@@ -10,3 +10,4 @@ def get_models():
         return load_latest_models()
     except FileNotFoundError:
         return None
+
