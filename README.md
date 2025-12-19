@@ -14,12 +14,15 @@ This project implements a production-grade MLOps pipeline for financial stock ma
 - **Data Ingestion**: Multi-source fetching from Alpha Vantage with an automatic `yfinance` fallback strategy.
 - **Advanced Feature Engineering**: Calculates technical indicators (Volatility, RSI, Lags, etc.).
 - **Multi-Task ML Pipeline**:
-    - **Classification**: Risk levels (Low, Medium, High).
+    - **Classification**: Risk levels (Low, Medium, High) using **Gradient Boosting**.
     - **Regression**: Next-day price return forecasting.
     - **Clustering**: PCA + K-Means to identify similar market-behaving stocks.
+- **Robust Data Layer**:
+    - **Smart Caching**: Auto-expires stale data (>24h) to respect API limits while ensuring freshness.
+    - **Fallback Strategy**: Seamlessly switches from Alpha Vantage to Yahoo Finance on error.
 - **Prefect Orchestration**: Fully automated and retriable training flows.
-- **DeepChecks Validation**: Integrated data integrity and distribution drift detection.
-- **Dockerized Deployment**: FastAPI service served via high-performance containers.
+- **DeepChecks Validation**: Integrated data integrity and distribution drift detection (KS Test).
+- **Dockerized Deployment**: FastAPI service served via high-performance containers (`riskguardai`).
 - **CI/CD**: Automated GitHub Actions for testing and image builds.
 
 ---
@@ -90,3 +93,4 @@ pytest
 - **Docker**: Ready
 - **CI/CD**: Active
 - **Tests**: Passing
+

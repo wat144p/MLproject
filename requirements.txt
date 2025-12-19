@@ -16,3 +16,4 @@ aiofiles>=23.0.0
 yfinance>=0.2.0
 deepchecks>=0.17.0
 setuptools
+

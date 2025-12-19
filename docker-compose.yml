@@ -11,3 +11,4 @@ services:
       - ./models:/app/models # Mount models so they persist/update
       - ./experiments:/app/experiments
       - ./data:/app/data
+
